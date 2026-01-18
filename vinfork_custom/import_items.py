@@ -42,6 +42,16 @@ def execute():
         "Bundal": "Nos"
     }
 
+    # Create UOMs if missing
+    required_uoms = set(uom_map.values())
+    for uom_name in required_uoms:
+        if not frappe.db.exists("UOM", uom_name):
+            uom_doc = frappe.new_doc("UOM")
+            uom_doc.uom_name = uom_name
+            uom_doc.enabled = 1
+            uom_doc.insert(ignore_permissions=True)
+            print(f"✅ Created missing UOM: {uom_name}")
+
     success_count = 0
     error_count = 0
 
