@@ -10,6 +10,15 @@ def execute():
         print(f"ERROR: File not found at {csv_path}")
         return
 
+    # Create Root Item Group if missing
+    if not frappe.db.exists("Item Group", "All Item Groups"):
+        root = frappe.new_doc("Item Group")
+        root.item_group_name = "All Item Groups"
+        root.is_group = 1
+        root.parent_item_group = "" 
+        root.insert(ignore_permissions=True)
+        print("✅ Created missing Root Item Group: All Item Groups")
+
     # Create Item Group if missing
     if not frappe.db.exists("Item Group", "Raw Material"):
         ig = frappe.new_doc("Item Group")
