@@ -10,6 +10,16 @@ def execute():
         print(f"ERROR: File not found at {csv_path}")
         return
 
+    # Create Item Group if missing
+    if not frappe.db.exists("Item Group", "Raw Material"):
+        ig = frappe.new_doc("Item Group")
+        ig.item_group_name = "Raw Material"
+        ig.parent_item_group = "All Item Groups"
+        ig.is_group = 0
+        ig.insert(ignore_permissions=True)
+        print("✅ Created missing Item Group: Raw Material")
+
+
     # UOM Mapping (CSV -> ERPNext)
     uom_map = {
         "Kgs": "Kg",
