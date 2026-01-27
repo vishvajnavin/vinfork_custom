@@ -42,14 +42,20 @@ def create_bom_on_submit(doc, method):
             
             # Add Operations
             for op_name in target_ops:
-                # specific check to ensure Op exists to prevent crash
                 if frappe.db.exists("Operation", op_name):
                     row = bom.append("operations", {})
                     row.operation = op_name
-                    # Default time (can be updated by Prod Manager later)
                     row.time_in_mins = 60 
             
-            # Note: We purposely DO NOT add any 'items' (Raw Materials)
+            # Add Dummy Raw Material ("Test 1")
+            dummy_item = "Test 1"
+            if frappe.db.exists("Item", dummy_item):
+                rm_row = bom.append("items", {})
+                rm_row.item_code = dummy_item
+                rm_row.qty = 1
+                rm_row.rate = 0 # Assume 0 cost for dummy
+            else:
+                 frappe.log_error(f"Auto-BOM: Dummy item '{dummy_item}' not found.", "Auto BOM Warning")
 
             bom.save()
             bom.submit()
