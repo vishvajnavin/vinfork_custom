@@ -13,11 +13,13 @@ def create_bom_on_submit(doc, method):
         # Example - we will fetch just the operation names if user didn't specify details
     ]
     
-    # Ideally, we fetch all Operations from the system to ensure we don't error out
-    # For now, I will try to fetch ALL active Operations if list is empty? 
-    # Or just use the ones user specifically mentioned: "Carpentry", "Polishing", "Upholstery", "Cladding", "Packing"
-    
-    target_ops = ["Carpentry", "Polishing", "Upholstery", "Cladding", "Packing"]
+    # Fetch ALL active Operations dynamically from the system
+    ops_list = frappe.get_all("Operation", fields=["name"])
+    if not ops_list:
+        frappe.log_error("Auto-BOM: No Operations found. Creating BOM without operations.", "Auto BOM Warning")
+        target_ops = []
+    else:
+        target_ops = [op.name for op in ops_list]
 
     for item in doc.items:
         # Check if item is a stock item (manufacturing candidate)
