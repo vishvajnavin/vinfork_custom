@@ -13,27 +13,15 @@ def create_bom_on_submit(doc, method):
         # Example - we will fetch just the operation names if user didn't specify details
     ]
     
-    # Fetch ALL active Operations dynamically from the system
+    # Fetch ALL active Operations dynamically from the system, capturing default workstation
     # We use ignore_permissions=True to ensure background script can read them
-    ops_list = frappe.get_all("Operation", fields=["name"], filters={}, ignore_permissions=True)
+    ops_list = frappe.get_all("Operation", fields=["name", "default_workstation"], filters={}, ignore_permissions=True)
 
     if not ops_list:
         frappe.log_error("Auto-BOM: No Operations found. Creating BOM without operations.", "Auto BOM Warning")
-        target_ops = []
-    else:
-        target_ops = [op.name for op in ops_list]
 
-    for item in doc.items:
-        # Check if item is a stock item (manufacturing candidate)
-        is_stock_item = frappe.db.get_value("Item", item.item_code, "is_stock_item")
-        if not is_stock_item:
-            continue
-
-        # Check if BOM already exists
-        if frappe.db.exists("BOM", {"item": item.item_code, "is_active": 1}):
-            continue # Skip, already has one
-
-        # CREATE NEW DUMMY BOM
+    # ... inside BOM creation ...
+    if not frappe.db.exists("BOM", {"item": item.item_code, "is_active": 1}):
         try:
             bom = frappe.new_doc("BOM")
             bom.item = item.item_code
@@ -45,10 +33,10 @@ def create_bom_on_submit(doc, method):
             bom.with_operations = 1 # Force the checkbox to be checked
             
             # Add Operations
-            for op_name in target_ops:
-                # We already blindly checked existence via get_all, so just add them
+            for op in ops_list:
                 row = bom.append("operations", {})
-                row.operation = op_name
+                row.operation = op.name
+                row.workstation = op.default_workstation # CRITICAL: Explicitly set the workstation
                 row.time_in_mins = 60 
             
             # Add Dummy Raw Material ("Test 1")
