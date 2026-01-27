@@ -14,15 +14,11 @@ def create_bom_on_submit(doc, method):
     ]
     
     # Fetch ALL active Operations dynamically from the system
-    try:
-        ops_list = frappe.get_all("Operation", fields=["name"], filters={}, ignore_permissions=True)
-        frappe.log_error(f"Auto-BOM found {len(ops_list)} operations: {ops_list}", "Auto BOM Debug")
-    except Exception as e:
-        frappe.log_error(f"Auto-BOM failed to fetch operations: {e}", "Auto BOM Error")
-        ops_list = []
+    # We use ignore_permissions=True to ensure background script can read them
+    ops_list = frappe.get_all("Operation", fields=["name"], filters={}, ignore_permissions=True)
 
     if not ops_list:
-        frappe.log_error("Auto-BOM: No Operations found (List is set to empty).", "Auto BOM Warning")
+        frappe.log_error("Auto-BOM: No Operations found. Creating BOM without operations.", "Auto BOM Warning")
         target_ops = []
     else:
         target_ops = [op.name for op in ops_list]
