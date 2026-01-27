@@ -15,7 +15,7 @@ def create_bom_on_submit(doc, method):
     
     # Fetch ALL active Operations dynamically from the system, capturing default workstation
     # We use ignore_permissions=True to ensure background script can read them
-    ops_list = frappe.get_all("Operation", fields=["name", "default_workstation"], filters={}, ignore_permissions=True)
+    ops_list = frappe.get_all("Operation", fields=["name", "workstation"], filters={}, ignore_permissions=True)
 
     if not ops_list:
         frappe.log_error("Auto-BOM: No Operations found. Creating BOM without operations.", "Auto BOM Warning")
@@ -36,7 +36,7 @@ def create_bom_on_submit(doc, method):
             for op in ops_list:
                 row = bom.append("operations", {})
                 row.operation = op.name
-                row.workstation = op.default_workstation # CRITICAL: Explicitly set the workstation
+                row.workstation = op.workstation # CRITICAL: Explicitly set the workstation
                 row.time_in_mins = 60 
             
             # Add Dummy Raw Material ("Test 1")
