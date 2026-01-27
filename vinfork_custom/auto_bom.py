@@ -42,12 +42,14 @@ def create_bom_on_submit(doc, method):
             bom.is_active = 1
             bom.currency = doc.currency or "INR"
             
+            bom.with_operations = 1 # Force the checkbox to be checked
+            
             # Add Operations
             for op_name in target_ops:
-                if frappe.db.exists("Operation", op_name):
-                    row = bom.append("operations", {})
-                    row.operation = op_name
-                    row.time_in_mins = 60 
+                # We already blindly checked existence via get_all, so just add them
+                row = bom.append("operations", {})
+                row.operation = op_name
+                row.time_in_mins = 60 
             
             # Add Dummy Raw Material ("Test 1")
             dummy_item = "Test 1"
