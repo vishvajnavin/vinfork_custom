@@ -21,7 +21,13 @@ def create_bom_on_submit(doc, method):
         frappe.log_error("Auto-BOM: No Operations found. Creating BOM without operations.", "Auto BOM Warning")
 
     # ... inside BOM creation ...
-    if not frappe.db.exists("BOM", {"item": item.item_code, "is_active": 1}):
+    for item in doc.items:
+        # Check if item is a stock item (manufacturing candidate)
+        is_stock_item = frappe.db.get_value("Item", item.item_code, "is_stock_item")
+        if not is_stock_item:
+            continue
+
+        if not frappe.db.exists("BOM", {"item": item.item_code, "is_active": 1}):
         try:
             bom = frappe.new_doc("BOM")
             bom.item = item.item_code
