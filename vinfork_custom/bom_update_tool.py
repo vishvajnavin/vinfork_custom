@@ -66,20 +66,20 @@ def update_bom_from_actuals(work_order_name):
     
     old_bom = frappe.get_doc("BOM", bom_name)
     
-    # Safety Check: Is it a generic auto-generated BOM? 
-    # Whatever, user wants to update it.
+    # Logic Change: Do NOT cancel the old BOM (it's linked to Job Card).
+    # Instead, we create a NEW version and make it the default.
     
-    if old_bom.docstatus == 1:
-        old_bom.cancel()
-        
+    # 1. Create New Version (Copy)
     new_bom = frappe.copy_doc(old_bom)
     new_bom.docstatus = 0
-    new_bom.amended_from = old_bom.name
+    new_bom.amended_from = None # Not technically an amendment of a cancelled doc, just a new version
+    new_bom.is_default = 1
+    new_bom.is_active = 1
     
-    # CLEAR old dummy items
+    # 2. CLEAR old dummy items
     new_bom.items = []
     
-    # INSERT new real items
+    # 3. INSERT new real items
     for row in actual_items:
         # Calculate Per Unit Qty
         per_unit_qty = row["qty_consumed"] / qty_produced
@@ -88,11 +88,14 @@ def update_bom_from_actuals(work_order_name):
         new_row.item_code = row["item_code"]
         new_row.qty = per_unit_qty
         new_row.rate = row["rate"]
-        new_row.stock_qty = per_unit_qty # Assuming UOM is same
+        new_row.stock_qty = per_unit_qty 
     
     new_bom.save(ignore_permissions=True)
     new_bom.submit()
     
-    # 5. Link new BOM back to Item? (Usually auto-linked by default checkbox)
-    
+    # 4. Handle Old BOM (Turn off default)
+    # We use db_set to avoid full validation/save loops that might trigger "Active" checks
+    if old_bom.is_default:
+        frappe.db.set_value("BOM", old_bom.name, "is_default", 0)
+        
     return new_bom.name
