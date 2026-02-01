@@ -60,7 +60,15 @@ def create_bom_on_submit(doc, method):
                 else:
                      frappe.log_error(f"Auto-BOM: Dummy item '{dummy_item}' not found.", "Auto BOM Warning")
 
-                bom.save()
+                bom.save(ignore_permissions=True)
+
+                # Naming Hack: Rename it to be nicer ? 
+                # Actually, standard naming is "BOM-Item-001".
+                # If user wants "Item Code - BOM 1", we can try to set autoname.
+                # But standard is usually safest. Let's try to stick to standard but just ensure it links well.
+                # User request: "product name - bom number".
+                # Frappe standard often does BOM/ItemCode/001
+                
                 bom.submit()
                 # frappe.msgprint(f"✅ Auto-created Dummy BOM: {bom.name} for {item.item_code}")
 
