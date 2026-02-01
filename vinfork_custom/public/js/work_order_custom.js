@@ -2,6 +2,7 @@ frappe.ui.form.on('Work Order', {
     refresh: function (frm) {
         // Debugging Logs
         console.log("VINFORK DEBUG: Work Order Script Loaded");
+        frappe.msgprint("Custom Script Loaded");
         console.log("VINFORK DEBUG: Status =", frm.doc.status);
         console.log("VINFORK DEBUG: BOM No =", frm.doc.bom_no);
 
