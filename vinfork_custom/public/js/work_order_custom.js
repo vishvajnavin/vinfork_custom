@@ -22,7 +22,7 @@ frappe.ui.form.on('Work Order', {
                         });
                     }
                 );
-            }, "Tools"); // Add under "Tools" or just neat top button
+            }); // Removed "Tools" grouping for visibility
         }
     }
 });
