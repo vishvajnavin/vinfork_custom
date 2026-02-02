@@ -170,10 +170,10 @@ def execute():
                 <strong>{{ item.item_name }}</strong>
             </td>
             <td>
-                {{ item.sofa_type or frappe.db.get_value("Item", item.item_code, "sofa_type") or "" }}
+                {{ item.custom_sofa_type or frappe.db.get_value("Item", item.item_code, "custom_sofa_type") or "" }}
             </td>
             <td>
-                {{ item.leather_range or frappe.db.get_value("Item", item.item_code, "leather_range") or "" }}
+                {{ item.custom_sofa_config_copy or frappe.db.get_value("Item", item.item_code, "custom_sofa_config_copy") or "" }}
             </td>
             <td class="text-right">{{ item.qty }}</td>
             <td class="text-right">{{ item.get_formatted("rate") }}</td>
