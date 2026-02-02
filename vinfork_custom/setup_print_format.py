@@ -147,10 +147,11 @@ def execute():
 <table class="items-table">
     <thead>
         <tr>
-            <th width="10%">Image</th>
-            <th width="25%">Item</th>
-            <th width="15%">Sofa Type</th>
-            <th width="15%">Leather Range</th>
+            <th width="8%">Image</th>
+            <th width="22%">Item</th>
+            <th width="10%">Sofa Type</th>
+            <th width="10%">Range</th>
+            <th width="10%">Leather</th>
             <th width="5%" class="text-right">Qty</th>
             <th width="15%" class="text-right">Rate</th>
             <th width="15%" class="text-right">Amount</th>
@@ -174,6 +175,9 @@ def execute():
             </td>
             <td>
                 {{ item.custom_sofa_config_copy or frappe.db.get_value("Item", item.item_code, "custom_sofa_config_copy") or "" }}
+            </td>
+            <td>
+                {{ item.leather_colour or frappe.db.get_value("Item", item.item_code, "leather_colour") or "" }}
             </td>
             <td class="text-right">{{ item.qty }}</td>
             <td class="text-right">{{ item.get_formatted("rate") }}</td>
