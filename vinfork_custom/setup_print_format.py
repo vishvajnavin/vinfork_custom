@@ -173,9 +173,12 @@ def execute():
                 {% endif %}
             </td>
             <td>
-                <!-- Custom Fields for Sofa -->
-                {% if item.sofa_config %}
-                    <div style="font-size:11px;"><strong>Config:</strong> {{ item.sofa_config }}</div>
+                <!-- Custom Fields -->
+                {% if item.sofa_type %}
+                    <div style="font-size:11px;"><strong>Type:</strong> {{ item.sofa_type }}</div>
+                {% endif %}
+                {% if item.leather_range %}
+                    <div style="font-size:11px;"><strong>Leather:</strong> {{ item.leather_range }}</div>
                 {% endif %}
                 {% if item.sofa_upholstery_type %}
                     <div style="font-size:11px;"><strong>Upholstery:</strong> {{ item.sofa_upholstery_type }}</div>
