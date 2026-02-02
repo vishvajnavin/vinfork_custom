@@ -73,9 +73,9 @@ def execute():
         background-color: #fcfcfc;
     }
     .item-image {
-        width: 50px;
-        height: 50px;
-        object-fit: cover;
+        width: 100px;
+        height: auto;
+        object-fit: contain;
         border-radius: 4px;
         border: 1px solid #eee;
     }
@@ -149,7 +149,7 @@ def execute():
         <tr>
             <th width="10%">Image</th>
             <th width="35%">Item & Description</th>
-            <th width="15%">Configurations</th>
+            <th width="15%">Details</th>
             <th width="10%" class="text-right">Qty</th>
             <th width="15%" class="text-right">Rate</th>
             <th width="15%" class="text-right">Amount</th>
@@ -166,11 +166,7 @@ def execute():
                 {% endif %}
             </td>
             <td>
-                <strong>{{ item.item_name }}</strong><br>
-                <span style="color:#777; font-size:11px;">{{ item.item_code }}</span>
-                {% if item.description and item.description != item.item_name %}
-                    <br><span style="color:#666; font-size:11px;">{{ item.description }}</span>
-                {% endif %}
+                <strong>{{ item.item_name }}</strong>
             </td>
             <td>
                 <!-- Custom Fields -->
