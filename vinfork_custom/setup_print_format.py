@@ -148,9 +148,10 @@ def execute():
     <thead>
         <tr>
             <th width="10%">Image</th>
-            <th width="35%">Item & Description</th>
-            <th width="15%">Details</th>
-            <th width="10%" class="text-right">Qty</th>
+            <th width="25%">Item</th>
+            <th width="15%">Sofa Type</th>
+            <th width="15%">Leather Range</th>
+            <th width="5%" class="text-right">Qty</th>
             <th width="15%" class="text-right">Rate</th>
             <th width="15%" class="text-right">Amount</th>
         </tr>
@@ -169,16 +170,10 @@ def execute():
                 <strong>{{ item.item_name }}</strong>
             </td>
             <td>
-                <!-- Custom Fields -->
-                {% if item.sofa_type %}
-                    <div style="font-size:11px;"><strong>Type:</strong> {{ item.sofa_type }}</div>
-                {% endif %}
-                {% if item.leather_range %}
-                    <div style="font-size:11px;"><strong>Leather:</strong> {{ item.leather_range }}</div>
-                {% endif %}
-                {% if item.sofa_upholstery_type %}
-                    <div style="font-size:11px;"><strong>Upholstery:</strong> {{ item.sofa_upholstery_type }}</div>
-                {% endif %}
+                {{ item.sofa_type or "" }}
+            </td>
+            <td>
+                {{ item.leather_range or "" }}
             </td>
             <td class="text-right">{{ item.qty }}</td>
             <td class="text-right">{{ item.get_formatted("rate") }}</td>
