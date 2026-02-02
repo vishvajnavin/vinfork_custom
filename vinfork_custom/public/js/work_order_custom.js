@@ -4,6 +4,11 @@ frappe.ui.form.on('Work Order', {
             frm.set_value('skip_transfer', 1);
         }
     },
+    onload: function (frm) {
+        if (frm.is_new()) {
+            frm.set_value('skip_transfer', 1);
+        }
+    },
     refresh: function (frm) {
         // Debugging Logs
         console.log("VINFORK DEBUG: Work Order Script Loaded");
