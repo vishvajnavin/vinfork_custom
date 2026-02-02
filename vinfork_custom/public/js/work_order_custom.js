@@ -5,6 +5,7 @@ frappe.ui.form.on('Work Order', {
         }
     },
     onload: function (frm) {
+        frappe.msgprint("SERVER SCRIPT ACTIVE: Checking Skip Transfer"); // TEMPORARY DEBUG
         if (frm.is_new()) {
             // Force it again with a small delay to ensure it beats standard scripts
             setTimeout(() => {
