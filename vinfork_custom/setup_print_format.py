@@ -157,8 +157,9 @@ def execute():
     <div class="row">
         <div class="col-xs-6">
             <!-- Logo Section -->
-            {% if doc.company_logo %}
-                <img src="{{ doc.company_logo }}" class="company-logo" alt="{{ doc.company }}">
+            {% set company_logo = frappe.db.get_value("Company", doc.company, "company_logo") %}
+            {% if company_logo %}
+                <img src="{{ company_logo }}" class="company-logo" alt="{{ doc.company }}">
             {% else %}
                 <h1 style="margin:0; font-size:24px; font-weight:700;">{{ doc.company }}</h1>
             {% endif %}
