@@ -6,15 +6,13 @@ frappe.ui.form.on('Work Order', {
     },
     onload: function (frm) {
         if (frm.is_new()) {
-            frm.set_value('skip_transfer', 1);
+            // Force it again with a small delay to ensure it beats standard scripts
+            setTimeout(() => {
+                frm.set_value('skip_transfer', 1);
+            }, 500);
         }
     },
     refresh: function (frm) {
-        // Debugging Logs
-        console.log("VINFORK DEBUG: Work Order Script Loaded");
-        console.log("VINFORK DEBUG: Status =", frm.doc.status);
-        console.log("VINFORK DEBUG: BOM No =", frm.doc.bom_no);
-
         // Only show if Completed and has a BOM
         if (frm.doc.status === "Completed" && frm.doc.bom_no) {
 
