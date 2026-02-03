@@ -1,4 +1,4 @@
-frappe.ui.form.on('Work Order', {
+wwfrappe.ui.form.on('Work Order', {
     setup: function (frm) {
         if (frm.is_new()) {
             frm.set_value('skip_transfer', 1);

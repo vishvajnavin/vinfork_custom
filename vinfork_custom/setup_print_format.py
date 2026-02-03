@@ -197,14 +197,15 @@ def execute():
 <table class="items-table">
     <thead>
         <tr>
-            <th width="10%">Image</th>
-            <th width="25%">Item</th>
-            <th width="12%">Sofa Type</th>
-            <th width="12%">Range</th>
-            <th width="12%">Leather</th>
-            <th width="8%" class="text-right">Qty</th>
+            <th width="8%">Image</th>
+            <th width="20%">Item</th>
+            <th width="10%">Sofa Type</th>
+            <th width="10%">Range</th>
+            <th width="10%">Leather</th>
+            <th width="12%">Order Type</th>
+            <th width="5%" class="text-right">Qty</th>
             <th width="10%" class="text-right">Rate</th>
-            <th width="11%" class="text-right">Amount</th>
+            <th width="15%" class="text-right">Amount</th>
         </tr>
     </thead>
     <tbody>
@@ -228,6 +229,9 @@ def execute():
             </td>
             <td>
                 {{ item.leather_colour or frappe.db.get_value("Item", item.item_code, "leather_colour") or "" }}
+            </td>
+            <td>
+                {{ item.order_type or "" }}
             </td>
             <td class="text-right" style="font-weight:500;">{{ item.qty }}</td>
             <td class="text-right">{{ item.get_formatted("rate") }}</td>
