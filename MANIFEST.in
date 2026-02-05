@@ -1,0 +1,18 @@
+include MANIFEST.in
+include requirements.txt
+include *.json
+include *.md
+include *.py
+include *.txt
+recursive-include vinfork_custom *.css
+recursive-include vinfork_custom *.csv
+recursive-include vinfork_custom *.html
+recursive-include vinfork_custom *.ico
+recursive-include vinfork_custom *.js
+recursive-include vinfork_custom *.json
+recursive-include vinfork_custom *.md
+recursive-include vinfork_custom *.png
+recursive-include vinfork_custom *.py
+recursive-include vinfork_custom *.svg
+recursive-include vinfork_custom *.txt
+recursive-exclude vinfork_custom *.pyc
