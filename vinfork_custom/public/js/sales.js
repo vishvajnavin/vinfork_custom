@@ -61,7 +61,7 @@ frappe.ui.form.on('Sales Order', {
             frm.add_custom_button(__('Download PDF (Customer Name)'), function () {
                 var url = '/api/method/vinfork_custom.custom_pdf.download_custom_so_pdf?name=' + encodeURIComponent(frm.doc.name);
                 window.open(url, '_blank');
-            }, __('Print')); // Group under "Print" menu if preferred, or just remove second arg to have it on top
+            });
         }
     }
 });
