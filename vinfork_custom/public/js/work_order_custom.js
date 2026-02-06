@@ -1,4 +1,4 @@
-wwfrappe.ui.form.on('Work Order', {
+frappe.ui.form.on('Work Order', {
     setup: function (frm) {
         if (frm.is_new()) {
             frm.set_value('skip_transfer', 1);
@@ -13,7 +13,24 @@ wwfrappe.ui.form.on('Work Order', {
         }
     },
     refresh: function (frm) {
-        // Only show if Completed and has a BOM
+        // 1. Fetch Sales Order Details (Custom Fields)
+        if (frm.doc.sales_order_item && !frm.doc.custom_sofa_type) {
+            frappe.db.get_value('Sales Order Item', frm.doc.sales_order_item,
+                ['custom_sofa_type', 'custom_sofa_config_copy', 'leather_colour', 'custom_spl_instruction', 'custom_configuration_', 'custom_drawing__measurements_'],
+                (r) => {
+                    if (r) {
+                        frm.set_value('custom_sofa_type', r.custom_sofa_type);
+                        frm.set_value('custom_sofa_config_copy', r.custom_sofa_config_copy);
+                        frm.set_value('leather_colour', r.leather_colour);
+                        frm.set_value('custom_spl_instruction', r.custom_spl_instruction);
+                        frm.set_value('custom_configuration_', r.custom_configuration_);
+                        frm.set_value('custom_drawing__measurements_', r.custom_drawing__measurements_);
+                    }
+                }
+            );
+        }
+
+        // 2. BOM Update Tool (Only if Completed)
         if (frm.doc.status === "Completed" && frm.doc.bom_no) {
 
             // Use add_inner_button -> This puts it clearly in the top right menu
