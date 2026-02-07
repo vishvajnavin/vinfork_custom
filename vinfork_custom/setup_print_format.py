@@ -6,7 +6,7 @@ def execute():
     Run via: bench execute vinfork_custom.setup_print_format.execute
     """
     
-    # HTML Template (Zoho Style - Professional)
+    # HTML Template (Zoho Style - Professional - Updated Fields)
     html_content = """
 <style>
     .print-format {
@@ -22,7 +22,7 @@ def execute():
         border-bottom: 2px solid #e5e7eb;
     }
     .company-logo {
-        max-height: 100px; /* Increased from 80px */
+        max-height: 100px;
         max-width: 250px;
         object-fit: contain;
     }
@@ -85,24 +85,21 @@ def execute():
     .items-table td {
         border-bottom: 1px solid #f3f4f6;
         padding: 15px 10px;
-        vertical-align: middle;
+        vertical-align: top;
     }
     .items-table tr:last-child td {
         border-bottom: none;
-    }
-    .item-image {
-        width: 80px;
-        height: 80px;
-        object-fit: contain;
-        border-radius: 6px;
-        background-color: #fff;
-        padding: 2px;
-        border: 1px solid #e5e7eb;
     }
     .item-name-cell {
         font-weight: 600;
         font-size: 14px;
         color: #111827;
+        margin-bottom: 4px;
+    }
+    .item-extra-info {
+        font-size: 12px;
+        color: #6b7280;
+        margin-top: 4px;
     }
     .total-section {
         display: flex;
@@ -151,6 +148,48 @@ def execute():
         margin-bottom: 8px;
         font-weight: 700;
     }
+    
+    /* IMAGE PAGE STYLES */
+    .page-break {
+        page-break-before: always;
+    }
+    .image-page-header {
+        font-size: 18px;
+        font-weight: 800;
+        color: #111827;
+        text-transform: uppercase;
+        border-bottom: 2px solid #e5e7eb;
+        padding-bottom: 10px;
+        margin-bottom: 30px;
+    }
+    .image-container {
+        text-align: center;
+        margin-bottom: 50px;
+        page-break-inside: avoid;
+    }
+    .large-item-image {
+        max-width: 100%;
+        max-height: 800px;
+        object-fit: contain;
+        border-radius: 8px;
+        border: 1px solid #e5e7eb;
+        padding: 10px;
+        background: #fff;
+    }
+    .image-caption {
+        margin-top: 15px;
+        font-weight: 600;
+        font-size: 16px;
+        color: #374151;
+    }
+    
+    /* Drawing Section */
+    .drawing-content {
+        margin-top: 10px;
+        font-size: 14px;
+        color: #374151;
+        line-height: 1.6;
+    }
 </style>
 
 <div class="header-section">
@@ -197,45 +236,55 @@ def execute():
 <table class="items-table">
     <thead>
         <tr>
-            <th width="8%">Image</th>
-            <th width="20%">Item</th>
+            <th width="30%">Item</th>
             <th width="10%">Sofa Type</th>
             <th width="10%">Range</th>
             <th width="10%">Leather</th>
-            <th width="12%">Order Type</th>
+            <th width="10%">Type</th>
             <th width="5%" class="text-right">Qty</th>
             <th width="10%" class="text-right">Rate</th>
-            <th width="15%" class="text-right">Amount</th>
+            <th width="15%" class="text-right">Total (18% GST)</th>
         </tr>
     </thead>
     <tbody>
         {% for item in doc.items %}
+        {% set amount_with_gst = item.amount * 1.18 %}
+        
         <tr>
             <td>
-                {% if item.image %}
-                    <img src="{{ item.image }}" class="item-image">
-                {% else %}
-                    <div style="width:50px; height:50px; background:#f3f4f6; border-radius:4px; display:flex; align-items:center; justify-content:center; color:#d1d5db; font-size:10px;">NO IMG</div>
-                {% endif %}
-            </td>
-            <td>
                 <div class="item-name-cell">{{ item.item_name }}</div>
+                
+                <!-- Special Instruction (Only if exists) -->
+                {% if item.custom_splinstruction %}
+                <div class="item-extra-info">
+                    <strong>Note:</strong> {{ item.custom_splinstruction }}
+                </div>
+                {% endif %}
+
+                <!-- Configuration (Only if exists) -->
+                {% if item.custom_configuration_ %}
+                <div class="item-extra-info">
+                    <strong>Config:</strong> {{ item.custom_configuration_ }}
+                </div>
+                {% endif %}
             </td>
             <td>
                 {{ item.custom_sofa_type or frappe.db.get_value("Item", item.item_code, "custom_sofa_type") or "" }}
             </td>
             <td>
-                {{ item.custom_sofa_config_copy or frappe.db.get_value("Item", item.item_code, "custom_sofa_config_copy") or "" }}
+                {{ item.custom_upholstery_colour_ or frappe.db.get_value("Item", item.item_code, "custom_upholstery_colour_") or "" }}
             </td>
             <td>
-                {{ item.leather_colour or frappe.db.get_value("Item", item.item_code, "leather_colour") or "" }}
+                {{ item.custom_upholstery or frappe.db.get_value("Item", item.item_code, "custom_upholstery") or item.leather_colour or "" }}
             </td>
             <td>
-                {{ item.order_type or "" }}
+                {{ item.custom_order_type or item.order_type or "" }}
             </td>
             <td class="text-right" style="font-weight:500;">{{ item.qty }}</td>
             <td class="text-right">{{ item.get_formatted("rate") }}</td>
-            <td class="text-right" style="font-weight:600;">{{ item.get_formatted("amount") }}</td>
+            <td class="text-right" style="font-weight:600;">
+                {{ frappe.format(amount_with_gst, {'fieldtype': 'Currency', 'currency': doc.currency}) }}
+            </td>
         </tr>
         {% endfor %}
     </tbody>
@@ -265,7 +314,7 @@ def execute():
         {% endif %}
 
         <tr class="grand-total-row">
-            <td class="label-col" style="padding-top:15px;">Total</td>
+            <td class="label-col" style="padding-top:15px;">Grand Total</td>
             <td class="grand-total">{{ doc.get_formatted("grand_total") }}</td>
         </tr>
     </table>
@@ -274,12 +323,37 @@ def execute():
 {% if doc.terms %}
 <div class="terms-section">
     <h4>Terms & Conditions</h4>
-    <p>{{ doc.terms | replace('\n', '<br>') }}</p>
+    <p>{{ doc.terms | replace('\\n', '<br>') }}</p>
+</div>
+{% endif %}
+
+<!-- PRODUCT GALLERY SECTION (If Images Exist) -->
+{% if doc.items|selectattr("image")|list|length > 0 %}
+<div class="page-break"></div>
+<div class="image-page-header">Product Gallery</div>
+
+{% for item in doc.items %}
+    {% if item.image %}
+    <div class="image-container">
+        <img src="{{ item.image }}" class="large-item-image">
+        <div class="image-caption">{{ item.item_name }}</div>
+    </div>
+    {% endif %}
+{% endfor %}
+{% endif %}
+
+<!-- DRAWING & MEASUREMENTS SECTION (If Exists) -->
+{% if doc.custom_drawing__measurements_ %}
+<div class="page-break"></div>
+<div class="image-page-header">Drawing & Measurements</div>
+
+<div class="drawing-content">
+    {{ doc.custom_drawing__measurements_ }}
 </div>
 {% endif %}
     """
-
-    # Check if Print Format Exists
+    
+    # Create or Get Print Format
     pf_name = "Vinfork Zoho Style"
     if not frappe.db.exists("Print Format", pf_name):
         pf = frappe.new_doc("Print Format")
@@ -293,10 +367,9 @@ def execute():
         pf.save()
         print(f"✅ Created Print Format: {pf_name}")
     else:
-        # Update existing
         pf = frappe.get_doc("Print Format", pf_name)
         pf.html = html_content
         pf.save()
         print(f"🔄 Updated Print Format: {pf_name}")
-
+        
     frappe.db.commit()
