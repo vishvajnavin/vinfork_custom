@@ -269,13 +269,13 @@ def execute():
                 {% endif %}
             </td>
             <td>
-                {{ item.custom_sofa_type or frappe.db.get_value("Item", item.item_code, "custom_sofa_type") or "" }}
+                {{ item.custom_sofa_type or "" }}
             </td>
             <td>
-                {{ item.custom_upholstery_colour_ or frappe.db.get_value("Item", item.item_code, "custom_upholstery_colour_") or "" }}
+                {{ item.custom_sofa_config_copy or "" }}
             </td>
             <td>
-                {{ item.custom_upholstery or frappe.db.get_value("Item", item.item_code, "custom_upholstery") or item.leather_colour or "" }}
+                {{ item.custom_upholstery or item.leather_colour or "" }}
             </td>
             <td>
                 {{ item.custom_order_type or item.order_type or "" }}
