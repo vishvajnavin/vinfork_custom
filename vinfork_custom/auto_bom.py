@@ -33,6 +33,9 @@ def create_bom_on_submit(doc, method):
 
         if not frappe.db.exists("BOM", {"item": item.item_code, "is_active": 1}):
             try:
+                # Get order type from Sales Order Item
+                order_type = item.get("custom_order_type") or "Standard"
+                
                 bom = frappe.new_doc("BOM")
                 bom.item = item.item_code
                 bom.quantity = 1
@@ -40,6 +43,13 @@ def create_bom_on_submit(doc, method):
                 bom.is_active = 1
                 bom.currency = doc.currency or "INR"
                 bom.company = doc.company 
+                
+                # Store metadata in BOM for later reference
+                # Create custom fields if needed: custom_order_type, custom_linked_sales_order
+                if frappe.db.has_column("BOM", "custom_order_type"):
+                    bom.custom_order_type = order_type
+                if frappe.db.has_column("BOM", "custom_linked_sales_order"):
+                    bom.custom_linked_sales_order = doc.name
                 
                 bom.with_operations = 1 # Force the checkbox to be checked
                 
