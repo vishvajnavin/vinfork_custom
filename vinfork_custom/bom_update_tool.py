@@ -68,8 +68,8 @@ def update_bom_from_actuals(work_order_name):
         new_bom_name = update_standard_bom(old_bom, actual_items, qty_produced)
         frappe.msgprint(f"✅ Updated Standard BOM: {new_bom_name}")
         
-    elif order_type_lower in ["customization", "customisation", "npd"]:
-        # Create NEW BOM variant (handle both UK/US spelling of customization)
+    elif order_type_lower in ["customization", "customisation", "npd", "new product"]:
+        # Create NEW BOM variant (handle multiple naming variations)
         new_bom_name = create_bom_variant(old_bom, actual_items, qty_produced, order_type, wo)
         frappe.msgprint(f"✅ Created New {order_type} BOM: {new_bom_name}")
         
