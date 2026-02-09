@@ -183,3 +183,31 @@ def create_bom_variant(old_bom, actual_items, qty_produced, order_type, wo):
         frappe.db.set_value("BOM", old_bom.name, "is_default", 0)
         
     return new_bom.name
+
+
+@frappe.whitelist()
+def start_work_order_manually(work_order_name):
+    """
+    Manually start a Work Order by updating its status to 'In Process'.
+    This bypasses the standard 'Start' button logic which forces stock entry creation.
+    """
+    # 1. Check permissions
+    if not frappe.has_permission("Work Order", "write"):
+        frappe.throw("You do not have permission to edit Work Orders.")
+        
+    # 2. Validate current status
+    status = frappe.db.get_value("Work Order", work_order_name, "status")
+    if status != "Not Started":
+        frappe.throw(f"Work Order is already {status}. Can only start if 'Not Started'.")
+        
+    # 3. DIRECT UPDATE (Bypass validations that block status change after submit)
+    # We use db_set to avoid triggering the 'validate' method which checks for stock entries
+    frappe.db.set_value("Work Order", work_order_name, "status", "In Process", update_modified=False)
+    
+    # 4. Add a comment to the timeline so there's a record
+    frappe.get_doc("Work Order", work_order_name).add_comment(
+        "Info", 
+        "Work Order started manually (bypassing stock entry) via custom script."
+    )
+    
+    return "Success"
