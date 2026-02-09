@@ -142,9 +142,6 @@ doctype_js = {
 doc_events = {
     "Sales Order": {
         "on_submit": "vinfork_custom.auto_bom.create_bom_on_submit"
-    },
-    "Work Order": {
-        "on_submit": "vinfork_custom.work_order_hooks.auto_start_work_order"
     }
 }
 
