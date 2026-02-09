@@ -1,1 +1,2 @@
 vinfork_custom.patches.remove_lead_sync_source.execute
+vinfork_custom.create_bom_custom_fields.execute
