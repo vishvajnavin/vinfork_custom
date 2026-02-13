@@ -32,55 +32,54 @@ def create_bom_on_submit(doc, method):
             continue
 
         if not frappe.db.exists("BOM", {"item": item.item_code, "is_active": 1}):
-            try:
-                # Get order type from Sales Order Item
-                order_type = item.get("custom_order_type") or "Standard"
-                
-                bom = frappe.new_doc("BOM")
-                bom.item = item.item_code
-                bom.quantity = 1
-                bom.is_default = 1
-                bom.is_active = 1
-                bom.currency = doc.currency or "INR"
-                bom.company = doc.company 
-                
-                # Store metadata in BOM for later reference
-                # Create custom fields if needed: custom_order_type, custom_linked_sales_order
-                if frappe.db.has_column("BOM", "custom_order_type"):
-                    bom.custom_order_type = order_type
-                if frappe.db.has_column("BOM", "custom_linked_sales_order"):
-                    bom.custom_linked_sales_order = doc.name
-                
-                bom.with_operations = 1 # Force the checkbox to be checked
-                
-                # Add Operations
-                for op in ops_list:
-                    row = bom.append("operations", {})
-                    row.operation = op.name
-                    row.workstation = op.workstation # CRITICAL: Explicitly set the workstation
-                    row.time_in_mins = 60 
-                
-                # Add Dummy Raw Material ("Test 1")
-                dummy_item = "Test 1"
-                if frappe.db.exists("Item", dummy_item):
-                    rm_row = bom.append("items", {})
-                    rm_row.item_code = dummy_item
-                    rm_row.qty = 1
-                    rm_row.rate = 0 # Assume 0 cost for dummy
-                else:
-                     frappe.log_error(f"Auto-BOM: Dummy item '{dummy_item}' not found.", "Auto BOM Warning")
+            # Get order type from Sales Order Item
+            order_type = item.get("custom_order_type") or "Standard"
+            
+            bom = frappe.new_doc("BOM")
+            bom.item = item.item_code
+            bom.quantity = 1
+            bom.is_default = 1
+            bom.is_active = 1
+            bom.currency = doc.currency or "INR"
+            bom.company = doc.company 
+            
+            # Store metadata in BOM for later reference
+            # Create custom fields if needed: custom_order_type, custom_linked_sales_order
+            if frappe.db.has_column("BOM", "custom_order_type"):
+                bom.custom_order_type = order_type
+            if frappe.db.has_column("BOM", "custom_linked_sales_order"):
+                bom.custom_linked_sales_order = doc.name
+            
+            bom.with_operations = 1 # Force the checkbox to be checked
+            
+            # Add Operations
+            for op in ops_list:
+                row = bom.append("operations", {})
+                row.operation = op.name
+                row.workstation = op.workstation # CRITICAL: Explicitly set the workstation
+                row.time_in_mins = 60 
+            
+            # Add Dummy Raw Material ("Test 1")
+            dummy_item = "Test 1"
+            if not frappe.db.exists("Item", dummy_item):
+                # Auto-create the dummy item if it doesn't exist
+                di = frappe.new_doc("Item")
+                di.item_code = dummy_item
+                di.item_group = "Raw Material"
+                di.stock_uom = "Nos"
+                di.is_stock_item = 1
+                di.valuation_rate = 0
+                di.description = "Placeholder item for Auto-BOM"
+                di.save(ignore_permissions=True)
+                frappe.msgprint(f"⚠️ Created missing dummy item: {dummy_item}")
 
-                bom.save(ignore_permissions=True)
+            if frappe.db.exists("Item", dummy_item):
+                rm_row = bom.append("items", {})
+                rm_row.item_code = dummy_item
+                rm_row.qty = 1
+                rm_row.rate = 0 # Assume 0 cost for dummy
+            else:
+                 frappe.throw(f"Auto-BOM Failed: Item '{dummy_item}' is missing and could not be created.")
 
-                # Naming Hack: Rename it to be nicer ? 
-                # Actually, standard naming is "BOM-Item-001".
-                # If user wants "Item Code - BOM 1", we can try to set autoname.
-                # But standard is usually safest. Let's try to stick to standard but just ensure it links well.
-                # User request: "product name - bom number".
-                # Frappe standard often does BOM/ItemCode/001
-                
-                bom.submit()
-                # frappe.msgprint(f"✅ Auto-created Dummy BOM: {bom.name} for {item.item_code}")
-
-            except Exception as e:
-                frappe.log_error(f"Failed to create Auto-BOM for {item.item_code}: {str(e)}", "Auto BOM Error")
+            bom.save(ignore_permissions=True)
+            bom.submit()
